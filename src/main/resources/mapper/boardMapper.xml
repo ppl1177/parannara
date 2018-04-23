@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.parannara.ProjectWeb2.board.dao.boardMapper">
+	<!--자유게시판 글쓰기 -->
+	<insert id="writeBoard" parameterType="board"> 
+		INSERT INTO board
+			(
+			boardnum
+			,id
+			,title
+			,content
+			<if test="originalFile != null and savedFile != null">
+			,savedFile
+			,originalFile
+			</if>
+			)
+			values
+			(
+			board_seq.nextval
+			,#{id}
+			,#{title}
+			,#{content}
+			<if test="originalFile != null and savedFile != null">
+			,#{savedFile}
+			,#{originalFile}
+			</if>
+			)
+	</insert>
+	<!--음악게시판 글쓰기 -->
+	<insert id="writeMusicBoard" parameterType="board"> 
+		INSERT INTO musicBoard
+			(
+			boardnum
+			,id
+			,title
+			,content
+			,savedFile
+			,originalFile
+			,screenShot
+			,savePicFile
+			)
+			values
+			(
+			musicBoard_seq.nextval
+			,#{id}
+			,#{title}
+			,#{content}
+			,#{savedFile}
+			,#{originalFile}
+			,#{screenShot}
+			,#{savePicFile}
+			)
+	</insert>
+	<!-- 게시판 글 불러오기 -->
+	<select id="selectAllBoard" resultType="board">
+		select
+			boardnum
+			,id
+			,title
+			,content
+			,to_char(inputdate, 'yyyy-MM-dd') inputdate
+			,hits
+		from
+			board
+		<if test="_parameter != null">
+		where	
+			title like '%' || #{searchText} || '%'
+			and deleteinfo = 0 
+		</if>
+		order by
+			boardnum desc
+	
+	</select>
+	<!-- 음악게시판 글 불러오기 -->
+	<select id="selectAllMusicBoard" resultType="board">
+		SELECT 
+			boardnum
+			,title
+			,id
+			,to_char(inputdate, 'yyyy-MM-dd') inputdate
+			,hits
+			,deleteinfo
+			,savedfile
+			,savepicfile
+		FROM
+			musicBoard
+		WHERE
+			deleteinfo = 0
+		ORDER BY
+			boardnum desc
+	
+	</select>
+	<!-- 게시판 글의 총 량 -->
+	<select id="freeBoardNum" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			board
+	</select>
+	<!-- 음악게시판 글의 총 량 -->
+	<select id="musicBoardNum" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			musicboard
+	</select>
+	<!-- 한가지의 글 선택 , 자유게시판-->
+	<select id="selectOneFreeBoard" resultType="board" parameterType="int">
+		SELECT
+			boardnum
+			,title
+			,id
+			,to_char(inputdate, 'yyyy-MM-dd') inputdate
+			,hits
+			,content
+			,savedFile
+			,originalFile
+			,deleteInfo
+		FROM
+			board
+		WHERE
+			boardnum=#{boardNum}
+	</select>
+	
+	<!-- 한가지의 글 선택 , 음악게시판-->
+	<select id="selectOneMusicBoard" resultType="board" parameterType="int">
+		SELECT
+			boardnum
+			,title
+			,id
+			,to_char(inputdate, 'yyyy-MM-dd') inputdate
+			,hits
+			,content
+			,savedFile
+			,originalFile
+			,screenshot
+		FROM
+			musicboard
+		WHERE
+			boardnum=#{boardNum}
+	</select>
+	
+	
+	<!-- hits수 올리기-자유게시판-->
+	<update id="updateFreeBoardHits" parameterType="int">
+		update
+			board
+		set
+			hits = hits + 1
+		where
+			boardnum = #{boardNum}
+	</update>
+	<!-- hits수 올리기-자유게시판-->
+	<update id="updateMusicBoardHits" parameterType="int">
+		update
+			musicboard
+		set
+			hits = hits + 1
+		where
+			boardnum = #{boardNum}
+	</update>
+	
+	<!--게시글 삭제-자유게시판  -->
+	<update id="deleteFreeBoard" parameterType="int">
+		update
+			board
+		set
+			deleteinfo = 1
+		where
+			boardnum = #{boardNum}
+	</update>
+	<!--게시글 삭제-음악게시판  -->
+	<update id="deleteMusicBoard" parameterType="int">
+		update
+			musicboard
+		set
+			deleteinfo = 1
+		where
+			boardnum = #{boardNum}
+	</update>
+	<!-- 각각 이미지 불러오기-음악 -->
+	<select id="imgSelecter" parameterType="int" resultType="board">
+		SELECT
+			screenshot
+			,savepicfile
+		FROM
+			musicboard
+		WHERE
+			boardnum = #{boardNum}
+	</select>
+	<!-- 동영상 주소 불러오기-음악 -->
+	<select id="videoSelecter" parameterType="int" resultType="board">
+		SELECT
+			originalfile
+			,savedfile
+		FROM
+			musicboard
+		WHERE
+			boardnum = #{boardNum}
+	</select>
+	<!-- 모든 동영상 주소 불러오기 -->
+	<select id="allVideoSelecter" resultType="board">
+		SELECT
+			savedfile
+		FROM
+			musicboard
+	</select>
+	<!-- 자유게시판 수정 -->
+	<update id="updateFreeBoard" parameterType="board">
+		UPDATE
+			board
+		SET
+			title=#{title}
+			,content=#{content}
+		WHERE
+			boardnum=#{boardNum}
+	</update>
+	<!-- 음악게시판 수정 -->
+	<update id="modifyMusic" parameterType="board">
+		UPDATE
+			musicboard
+		SET
+			title=#{title}
+			,content=#{content}
+		WHERE
+			boardnum=#{boardNum}
+	</update>
+
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.parannara.ProjectWeb2.member.dao.memberMapper">
+	<!--회원가입 -->
+	<insert id="joinMember" parameterType="member"> 
+		INSERT INTO member(
+			memberId
+			,password
+			,name
+			,email
+			,phoneNum
+			,memberNum
+			,address
+		)
+		values
+		(
+			#{memberId}
+			,#{password}
+			,#{name}
+			,#{email}
+			,#{phoneNum}
+			,member_seq.nextval
+			,#{address}
+		)
+	</insert>
+	<!-- 회원 아이디 확인 -->
+	<select id="searchId" parameterType="String" resultType="member">
+		SELECT
+			memberId
+			,password
+			,name
+			,email
+			,phoneNum
+			,memberNum
+			,address
+		FROM
+			member
+		WHERE
+			memberId = #{memberId}
+	</select>
+	<select id="loginCK" parameterType="String" resultType="member">
+		SELECT
+			memberId
+			,password
+			,name
+			,email
+			,phoneNum
+			,memberNum
+			,address
+		FROM
+			member
+		WHERE
+			memberId = #{memberId} and
+			password = #{password}
+	</select>
+	<!-- 회원정보 수정 -->
+	<update id="update" parameterType="member">
+		UPDATE
+			member
+		SET
+			password = #{password}
+			,name = #{name}
+			,email = #{email}
+			,phoneNum = #{phoneNum}
+			,address = #{address}
+		WHERE
+			memberId = #{memberId}
+	</update>
+	
+</mapper>
